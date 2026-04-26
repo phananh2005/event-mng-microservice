@@ -1,10 +1,12 @@
 package com.sa.eventservice.mapper;
 
+import com.sa.eventservice.dto.request.EventRequest;
 import com.sa.eventservice.dto.response.EventResponse;
 import com.sa.eventservice.model.entity.Event;
 import com.sa.eventservice.model.entity.EventImage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -12,14 +14,20 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {TicketTypeMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EventMapper {
+
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "imageUrls", expression = "java(mapImages(event.getImages()))")
     EventResponse toEventResponse(Event event);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "images", ignore = true)
+    @Mapping(target = "ticketTypes", ignore = true)
+    @Mapping(target = "organizerId", ignore = true)
+    void updateEvent(EventRequest request, @MappingTarget Event event);
+
     default List<String> mapImages(List<EventImage> images) {
-        if (images == null) {
-            return List.of();
-        }
+        if (images == null) return List.of();
         return images.stream().map(EventImage::getImageUrl).collect(Collectors.toList());
     }
 }

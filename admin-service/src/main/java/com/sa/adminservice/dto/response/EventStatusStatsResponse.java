@@ -1,15 +1,16 @@
-package com.sa.event_mng.dto.response;
+package com.sa.adminservice.dto.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//Thống kê theo Trạng thái
 public class EventStatusStatsResponse {
     private Long quarter;
     private Long year;
@@ -18,10 +19,10 @@ public class EventStatusStatsResponse {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class EventStatusStatsDetail {
         private String status;
         private Double percentage;
         private Long countEvents;
     }
-
 }

@@ -1,0 +1,63 @@
+package com.sa.bookingservice.model.entity;
+
+import com.sa.bookingservice.model.enums.OrderStatus;
+import com.sa.bookingservice.model.enums.PaymentMethod;
+import com.sa.bookingservice.model.enums.PaymentStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "orders")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Order extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
+
+    @Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal totalAmount;
+
+    @Column(name = "service_fee", nullable = false, precision = 12, scale = 2)
+    private BigDecimal serviceFee;
+
+    @Column(name = "organizer_amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal organizerAmount;
+
+    @Column(name = "platform_fee_rate", nullable = false)
+    private Float platformFeeRate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
+    private PaymentStatus paymentStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
+    private OrderStatus orderStatus;
+
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<OrderItem> items = new ArrayList<>();
+}

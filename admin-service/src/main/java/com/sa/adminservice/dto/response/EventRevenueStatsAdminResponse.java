@@ -1,15 +1,17 @@
-package com.sa.event_mng.dto.response;
+package com.sa.adminservice.dto.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EventRevenueStatsAdminResponse {
     private BigDecimal totalRevenue;
     private List<MonthlyRevenueResponse> monthlyRevenues;

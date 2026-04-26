@@ -26,20 +26,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: event-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    networks:
-      - event-mng-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # ============================================================
   # Service Registry
   # ============================================================
@@ -205,14 +191,10 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/booking_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://service-registry:8761/eureka/
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       mysql:
-        condition: service_healthy
-      redis:
         condition: service_healthy
       service-registry:
         condition: service_healthy

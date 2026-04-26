@@ -15,7 +15,12 @@ public enum ErrorCode {
     CATEGORY_NAME_REQUIRED(2003, "Category name is required", HttpStatus.BAD_REQUEST),
     CATEGORY_NAME_INVALID(2004, "Category name must be at least 5 characters", HttpStatus.BAD_REQUEST),
 
-    EVENT_NOT_FOUND(3001, "Event not found", HttpStatus.NOT_FOUND);
+    EVENT_NOT_FOUND(3001, "Event not found", HttpStatus.NOT_FOUND),
+    EVENT_NAME_REQUIRED(3002, "Event name is required", HttpStatus.BAD_REQUEST),
+    CATEGORY_ID_REQUIRED(3003, "Category id is required", HttpStatus.BAD_REQUEST),
+    START_TIME_REQUIRED(3004, "Start time is required", HttpStatus.BAD_REQUEST),
+    END_TIME_REQUIRED(3005, "End time is required", HttpStatus.BAD_REQUEST),
+    EVENT_FORBIDDEN(3006, "You are not the owner of this event", HttpStatus.FORBIDDEN);
 
     private final int code;
     private final String message;

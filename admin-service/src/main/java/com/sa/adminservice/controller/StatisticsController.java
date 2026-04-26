@@ -1,56 +1,52 @@
-package com.sa.event_mng.controller;
+package com.sa.adminservice.controller;
 
-import com.sa.event_mng.dto.response.*;
-import com.sa.event_mng.service.StatisticsService;
+import com.sa.adminservice.dto.response.*;
+import com.sa.adminservice.service.StatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/admin/statistics")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Thống kê", description = "Quản lý dữ liệu tổng hợp")
-@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Admin Statistics", description = "Read-only dashboard statistics (ADMIN only)")
 public class StatisticsController {
 
     StatisticsService statisticsService;
 
-    @GetMapping("/statistics-event/by-status/{quarter}/{year}")
-    @Operation(summary = "Tỉ lệ phân bổ trạng thái từng quý (Admin)")
-    public ApiResponse<EventStatusStatsResponse> getStatisticsByStatus(@PathVariable Long quarter, @PathVariable Long year) {
-        return ApiResponse.<EventStatusStatsResponse>builder().result(statisticsService.getEventStatusStats(quarter, year)).build();
+    @GetMapping("/by-status/{quarter}/{year}")
+    @Operation(summary = "Event status distribution by quarter/year")
+    public ApiResponse<EventStatusStatsResponse> getByStatus(
+            @PathVariable Long quarter, @PathVariable Long year) {
+        return ApiResponse.<EventStatusStatsResponse>builder()
+                .result(statisticsService.getEventStatusStats(quarter, year)).build();
     }
 
-    @GetMapping("/statistics-event/by-temporal/{dayOfWeek}")
-    //            1, "Sunday",
-    //            2, "Monday",
-    //            3, "Tuesday",
-    //            4, "Wednesday",
-    //            5, "Thursday",
-    //            6, "Friday",
-    //            7, "Saturday"
-    @Operation(summary = "Thống kê số lượng sự kiện bắt đầu (start_time) theo từng ngày trong tuần hoặc giờ trong ngày để tìm giờ vàng (Admin)")
-    public ApiResponse<EventTemporalStatsResponse> getStatisticsByTemporal(@PathVariable int dayOfWeek) {
-        return ApiResponse.<EventTemporalStatsResponse>builder().result(statisticsService.getEventTemporalStats(dayOfWeek)).build();
+    @GetMapping("/by-temporal/{dayOfWeek}")
+    @Operation(summary = "Event count by hour for a given day of week (1=Sun … 7=Sat)")
+    public ApiResponse<EventTemporalStatsResponse> getByTemporal(@PathVariable int dayOfWeek) {
+        return ApiResponse.<EventTemporalStatsResponse>builder()
+                .result(statisticsService.getEventTemporalStats(dayOfWeek)).build();
     }
 
-    @GetMapping("/statistics-revenue/{id_organizer}")
-    @Operation(summary = "Thống kê doanh thu (chủ sử kiện)")
-    public ApiResponse<List<EventRevenueStatsOrganizerResponse>> getStatisticsRevenueOrganizer(@PathVariable("id_organizer") Long idOrganizer) {
-        return ApiResponse.<List<EventRevenueStatsOrganizerResponse>>builder().result(statisticsService.getEventRevenueStatsOrganizer(idOrganizer)).build();
+    @GetMapping("/revenue/organizer/{organizerId}")
+    @Operation(summary = "Revenue stats per event for an organizer")
+    public ApiResponse<List<EventRevenueStatsOrganizerResponse>> getRevenueOrganizer(
+            @PathVariable Long organizerId) {
+        return ApiResponse.<List<EventRevenueStatsOrganizerResponse>>builder()
+                .result(statisticsService.getEventRevenueStatsOrganizer(organizerId)).build();
     }
 
-    @GetMapping("/statistics-revenue/admin")
-    @Operation(summary = "Thống kê doanh thu (admin, tính tổng tiền dịch vụ)")
-    public ApiResponse<EventRevenueStatsAdminResponse> getStatisticsRevenueAdmin() {
-        return ApiResponse.<EventRevenueStatsAdminResponse>builder().result(statisticsService.getEventRevenueStatsAdmin()).build();
+    @GetMapping("/revenue/admin")
+    @Operation(summary = "Platform-wide revenue stats (service fees)")
+    public ApiResponse<EventRevenueStatsAdminResponse> getRevenueAdmin() {
+        return ApiResponse.<EventRevenueStatsAdminResponse>builder()
+                .result(statisticsService.getEventRevenueStatsAdmin()).build();
     }
 }
