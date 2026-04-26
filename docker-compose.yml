@@ -75,8 +75,36 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://service-registry:8761/eureka/
       - JWT_SECRET=${JWT_SECRET}
+      - LEGACY_MONOLITH_URL=http://event-mng:8080
     depends_on:
       service-registry:
+        condition: service_healthy
+      event-mng:
+        condition: service_started
+    networks:
+      - event-mng-network
+
+  # ============================================================
+  # Legacy monolith kept for gradual strangler migration
+  # ============================================================
+
+  event-mng:
+    build:
+      context: ./event-mng
+      dockerfile: Dockerfile
+    container_name: event-mng
+    restart: unless-stopped
+    ports:
+      - "8090:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/event_mng?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - APPLICATION_SECURITY_JWT_SECRET_KEY=${JWT_SECRET}
+      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+    depends_on:
+      mysql:
         condition: service_healthy
     networks:
       - event-mng-network
