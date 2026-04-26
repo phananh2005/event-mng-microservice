@@ -73,7 +73,7 @@ class AuthenticationServiceTest {
                 .username("customer1")
                 .password("encoded")
                 .enabled(true)
-                .roles(List.of(Role.builder().name(com.sa.authservice.model.enums.Role.CUSTOMER).build()))
+                .roles(new java.util.HashSet<>(java.util.Set.of(Role.builder().name("CUSTOMER").build())))
                 .build();
     }
 
@@ -142,11 +142,11 @@ class AuthenticationServiceTest {
                 .fullName("New User")
                 .build();
 
-        Role customerRole = Role.builder().id(2L).name(com.sa.authservice.model.enums.Role.CUSTOMER).build();
+        Role customerRole = Role.builder().name("CUSTOMER").build();
 
         when(userRepository.findByUsername("new-user")).thenReturn(Optional.empty());
         when(userRepository.existsByEmailAndEnabledTrue("new-user@example.com")).thenReturn(false);
-        when(roleRepository.findByName(com.sa.authservice.model.enums.Role.CUSTOMER)).thenReturn(Optional.of(customerRole));
+        when(roleRepository.findById("CUSTOMER")).thenReturn(Optional.of(customerRole));
         when(passwordEncoder.encode("secret123")).thenReturn("encoded-secret");
 
         String result = authenticationService.register(request);
@@ -165,7 +165,7 @@ class AuthenticationServiceTest {
                 .password("encoded")
                 .enabled(false)
                 .verificationToken("verify-token")
-                .roles(List.of(Role.builder().name(com.sa.authservice.model.enums.Role.CUSTOMER).build()))
+                .roles(new java.util.HashSet<>(java.util.Set.of(Role.builder().name("CUSTOMER").build())))
                 .build();
 
         when(userRepository.findByVerificationToken("verify-token")).thenReturn(Optional.of(disabledUser));

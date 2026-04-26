@@ -44,7 +44,7 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "/verify", produces = "text/plain;charset=UTF-8")
-    public String verifyEmail(@RequestParam String token) {
+    public String verifyEmail(@RequestParam("token") String token) {
         return authenticationService.verifyEmail(token);
     }
 

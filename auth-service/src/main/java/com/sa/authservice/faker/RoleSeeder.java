@@ -13,8 +13,8 @@ public class RoleSeeder {
 
     public void seed() {
         for (com.sa.authservice.model.enums.Role r : com.sa.authservice.model.enums.Role.values()) {
-            if (roleRepository.findByName(r).isEmpty()) {
-                roleRepository.save(Role.builder().name(r).build());
+            if (roleRepository.findById(r.name()).isEmpty()) {
+                roleRepository.save(Role.builder().name(r.name()).description(r.name()).permissions(new java.util.HashSet<>()).build());
             }
         }
     }

@@ -26,13 +26,13 @@ public class UserSeeder {
 
     private void seedUser(String username, String email, String fullName, Role roleEnum) {
         if (userRepository.findByUsername(username).isPresent()) return;
-        roleRepository.findByName(roleEnum).ifPresent(role -> {
+        roleRepository.findById(roleEnum.name()).ifPresent(role -> {
             userRepository.save(User.builder()
                     .username(username)
                     .email(email)
                     .fullName(fullName)
                     .password(passwordEncoder.encode("password"))
-                    .roles(List.of(role))
+                    .roles(new java.util.HashSet<>(java.util.Set.of(role)))
                     .enabled(true)
                     .build());
         });

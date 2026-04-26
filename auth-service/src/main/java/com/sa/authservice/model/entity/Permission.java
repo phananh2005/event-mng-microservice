@@ -2,25 +2,20 @@ package com.sa.authservice.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
-import java.util.Set;
 
 @Entity
-@Table(name = "role")
+@Table(name = "permission")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class Permission {
 
     @Id
     private String name;
 
     private String description;
-
-    @ManyToMany
-    private Set<Permission> permissions;
 }

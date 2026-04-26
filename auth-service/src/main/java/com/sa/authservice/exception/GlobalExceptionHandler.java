@@ -15,6 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @SuppressWarnings("rawtypes")
     ResponseEntity<ApiResponse> handlingException(Exception ex) {
+        log.error("Uncategorized exception occurred: ", ex);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());

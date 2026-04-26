@@ -102,23 +102,18 @@ public class AuthenticationService {
         }
 
         String token = UUID.randomUUID().toString();
-        com.sa.authservice.model.enums.Role role = com.sa.authservice.model.enums.Role.CUSTOMER;
+        String roleName = "CUSTOMER";
 
-        if (request.getRole() != null) {
-            try {
-                com.sa.authservice.model.enums.Role requestedRole =
-                        com.sa.authservice.model.enums.Role.valueOf(request.getRole().toUpperCase());
-                if (requestedRole != com.sa.authservice.model.enums.Role.ADMIN) {
-                    role = requestedRole;
-                }
-            } catch (IllegalArgumentException ignored) {
-                // Keep default CUSTOMER when role input is invalid.
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            String requestedRole = request.getRole().toUpperCase();
+            if (!requestedRole.equals("ADMIN")) {
+                roleName = requestedRole;
             }
         }
 
-        com.sa.authservice.model.enums.Role selectedRole = role;
-        Role roleEntity = roleRepository.findByName(selectedRole)
-                .orElseGet(() -> roleRepository.save(Role.builder().name(selectedRole).build()));
+        final String finalRoleName = roleName;
+        Role roleEntity = roleRepository.findById(finalRoleName)
+                .orElseGet(() -> roleRepository.save(Role.builder().name(finalRoleName).build()));
 
         User user = User.builder()
                 .username(request.getUsername())
@@ -127,7 +122,7 @@ public class AuthenticationService {
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .address(request.getAddress())
-                .roles(new ArrayList<>(java.util.List.of(roleEntity)))
+                .roles(new java.util.HashSet<>(java.util.Set.of(roleEntity)))
                 .enabled(false)
                 .verificationToken(token)
                 .build();
@@ -239,10 +234,7 @@ public class AuthenticationService {
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(validDuration, ChronoUnit.SECONDS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
-                .claim("scope", user.getRoles().stream()
-                        .map(role -> role.getName().name())
-                        .sorted()
-                        .collect(Collectors.joining(" ")))
+                .claim("scope", buildScope(user))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -255,5 +247,17 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
-}
 
+    private String buildScope(User user) {
+        java.util.StringJoiner stringJoiner = new java.util.StringJoiner(" ");
+        if (!org.springframework.util.CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getName());
+                if (!org.springframework.util.CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
+                }
+            });
+        }
+        return stringJoiner.toString();
+    }
+}

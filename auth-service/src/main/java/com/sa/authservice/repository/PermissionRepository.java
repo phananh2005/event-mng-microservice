@@ -1,12 +1,10 @@
 package com.sa.authservice.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sa.authservice.model.entity.Role;
+import com.sa.authservice.model.entity.Permission;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, String> {
+public interface PermissionRepository extends JpaRepository<Permission, String> {
 }
